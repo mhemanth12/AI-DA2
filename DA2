@@ -1,0 +1,42 @@
+% Define input linguistic variables and their membership functions
+input_water_level = newfis('WaterLevelControl');
+
+% Define membership functions for input variable 'WaterLevel'
+input_water_level = addvar(input_water_level, 'input', 'WaterLevel', [0 100]);
+input_water_level = addmf(input_water_level, 'input', 1, 'Low', 'trimf', [0 0 50]);
+input_water_level = addmf(input_water_level, 'input', 2, 'Medium', 'trimf', [0 50 100]);
+input_water_level = addmf(input_water_level, 'input', 3, 'High', 'trimf', [50 100 100]);
+
+% Define output linguistic variable and its membership functions
+output_valve_opening = addvar(input_water_level, 'output', 'ValveOpening', [0 100]);
+output_valve_opening = addmf(input_water_level, 'output', 1, 'Small', 'trimf', [0 0 50]);
+output_valve_opening = addmf(input_water_level, 'output', 2, 'Medium', 'trimf', [0 50 100]);
+output_valve_opening = addmf(input_water_level, 'output', 3, 'Large', 'trimf', [50 100 100]);
+
+% Define fuzzy rules
+ruleList = [
+    1 1 1 1 1;  % IF WaterLevel is Low THEN ValveOpening is Small
+    2 0 1 1 1;  % IF WaterLevel is Medium THEN ValveOpening is Medium
+    3 0 1 1 1;  % IF WaterLevel is High THEN ValveOpening is Medium
+];
+
+% Add fuzzy rules to the fuzzy inference system
+input_water_level = addrule(input_water_level, ruleList);
+
+% Sample input data: water level
+water_level = 30;
+
+% Evaluate the fuzzy inference system
+output = evalfis(input_water_level, water_level);
+
+% Display the recommended valve opening
+disp(['For a water level of ', num2str(water_level), '%, the recommended valve opening is: ', num2str(output), '%']);
+
+% Plot membership functions for visualization
+figure;
+subplot(2,1,1);
+plotmf(input_water_level, 'input', 1);
+title('Water Level Membership Functions');
+subplot(2,1,2);
+plotmf(input_water_level, 'output', 1);
+title('Valve Opening Membership Functions');
